@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Accessibility Test</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+        }
+        /* Container Setup */
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            background: #ffffff;
+            padding: 40px;
+        }
+        /* Heading */
+        h2 {
+            color: #1C75BC;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 24px;
+        }
+        /* Form Styles */
+        form {
+            display: grid;
+            gap: 15px;
+            width: 100%;
+            max-width: 800px;
+        }
+        label {
+            font-weight: bold;
+            color: #333333;
+        }
+        select, input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            outline: none;
+        }
+        select:focus, input[type="text"]:focus {
+            border: 2px solid #4CBBEC;
+        }
+        /* Button Styles */
+        button {
+            background-color: #4CBBEC;
+            color: white;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        button:hover, button:focus {
+            background-color: #1C75BC;
+            outline: 3px solid #1C75BC;
+            outline-offset: 2px;
+        }
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            form {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (min-width: 769px) {
+            form {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            .full-width {
+                grid-column: 1 / span 2;
+            }
+        }
+    </style>
+</head>
+<!-- Navbar code to be added to each screen -->
+<nav class="navbar">
+    <div class="navbar-logo">
+        <h2>Unified Accessibility</h2>
+    </div>
+    <ul class="navbar-list">
+        <li><a href="screen_1.html">Test</a></li>
+        <li><a href="screen_2.html">Defect Results</a></li>
+        <li><a href="screen_3.html">Generate ACR</a></li>
+        <li><a href="screen_4.html">ACR Results</a></li>
+    </ul>
+</nav>
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .navbar {
+        background-color: #4CBBEC;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-logo h2 {
+        margin: 0;
+        color: white;
+        font-size: 24px;
+    }
+
+    .navbar-list {
+        list-style: none;
+        display: flex;
+        gap: 30px;
+        margin: 0;
+        padding: 0;
+    }
+
+    .navbar-list li {
+        display: inline;
+    }
+
+    .navbar-list a {
+        text-decoration: none;
+        color: white;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .navbar-list a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <h2>Start Test</h2>
+        <form id="startTestForm" method="POST" action="/submit-form">
+            <div class="full-width">
+                <label for="wcagStandard">Select WCAG Standards</label>
+                <select id="wcagStandard" name="wcagStandard" aria-label="Select WCAG Standards">
+                    <option value="wcag21">WCAG 2.1</option>
+                    <option value="wcag20">WCAG 2.0</option>
+                    <option value="wcag22">WCAG 2.2</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="wcagLevel">Select WCAG Conformance Levels</label>
+                <select id="wcagLevel" name="wcagLevel" aria-label="Select WCAG Conformance Levels">
+                    <option value="A">A</option>
+                    <option value="AA">AA</option>
+                    <option value="AAA">AAA</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="vpatTemplate">VPAT Template Version</label>
+                <select id="vpatTemplate" name="vpatTemplate" aria-label="Select VPAT Template Version">
+                    <option value="vpat2023">VPAT November 2023</option>
+                    <option value="vpat2022">VPAT June 2022</option>
+                    <option value="vpat2021">VPAT March 2021</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="platform">Platform</label>
+                <input type="text" id="platform" name="platform" placeholder="Enter Platform" aria-label="Platform">
+            </div>
+
+            <div>
+                <label for="environment">Environment</label>
+                <input type="text" id="environment" name="environment" placeholder="Enter Environment" aria-label="Environment">
+            </div>
+
+            <div class="full-width">
+                <label for="siteUrl">Site URL</label>
+                <input type="text" id="siteUrl" name="siteUrl" placeholder="Enter Site URL" aria-label="Site URL">
+            </div>
+
+            <div class="full-width">
+                <button type="submit">Start Test</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function startTest() {
+            try {
+                const wcagStandard = document.getElementById('wcagStandard').value;
+                const conformanceLevel = document.getElementById('wcagLevel').value;
+                const vpatTemplate = document.getElementById('vpatTemplate').value;
+                const siteUrl = document.getElementById('siteUrl').value;
+    
+                // Data to send to backend
+                const formData = {
+                    wcagStandard,
+                    conformanceLevel,
+                    vpatTemplate,
+                    siteUrl
+                };
+    
+                // Send data to backend
+                fetch('/submit-form', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Form submission response:', data);
+                    // Redirect to Screen 2
+                    window.location.href = '/screen_2';
+                })
+                .catch(error => {
+                    console.error('Error during form submission:', error);
+                });
+    
+            } catch (error) {
+                console.error("Error during form submission:", error);
+                alert("An error occurred: " + error.message);
+            }
+        }
+    </script>
+    
+</body>
+</html>

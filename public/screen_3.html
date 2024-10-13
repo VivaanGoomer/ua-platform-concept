@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPAT & Accessibility Testing Info</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            height: 100%;
+            background-color: #f8f9fa;
+        }
+        .container {
+            width: 90%;
+            margin: 30px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h3 {
+            font-size: 22px;
+            color: #4CBBEC;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .vpat-header, .accessibility-testing {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        .form-section {
+            width: 45%;
+        }
+        .form-section label {
+            display: block;
+            margin-bottom: 5px;
+            color: #1C75BC;
+            font-weight: 600;
+        }
+        .form-section input, .form-section select, .form-section textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #d3d3d3;
+            border-radius: 8px;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            width: 45%;
+        }
+        .checkbox-item input {
+            margin-right: 10px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .button-container button {
+            background-color: #4CBBEC;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .button-container button:hover {
+            background-color: #1C75BC;
+        }
+    </style>
+</head>
+<!-- Navbar code to be added to each screen -->
+<nav class="navbar">
+    <div class="navbar-logo">
+        <h2>Unified Accessibility</h2>
+    </div>
+    <ul class="navbar-list">
+        <li><a href="screen_1.html">Test</a></li>
+        <li><a href="screen_2.html">Defect Results</a></li>
+        <li><a href="screen_3.html">Generate ACR</a></li>
+        <li><a href="screen_4.html">ACR Results</a></li>
+    </ul>
+</nav>
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .navbar {
+        background-color: #4CBBEC;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-logo h2 {
+        margin: 0;
+        color: white;
+        font-size: 24px;
+    }
+
+    .navbar-list {
+        list-style: none;
+        display: flex;
+        gap: 30px;
+        margin: 0;
+        padding: 0;
+    }
+
+    .navbar-list li {
+        display: inline;
+    }
+
+    .navbar-list a {
+        text-decoration: none;
+        color: white;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .navbar-list a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<body>
+
+    <div class="container">
+        <div class="vpat-header">
+            <div class="form-section">
+                <h3>VPAT Header Info</h3>
+                <label>Select WCAG Standards</label>
+                <select>
+                    <option value="wcag21">WCAG 2.1</option>
+                    <option value="wcag20">WCAG 2.0</option>
+                    <option value="wcag22">WCAG 2.2</option>
+                </select>
+
+                <label>Select WCAG Conformance Levels</label>
+                <select>
+                    <option value="A">A</option>
+                    <option value="AA">AA</option>
+                    <option value="AAA">AAA</option>
+                </select>
+
+                <label>VPAT Template Version</label>
+                <select>
+                    <option value="vpat2023">VPAT November 2023</option>
+                    <option value="vpat2022">VPAT June 2022</option>
+                    <option value="vpat2021">VPAT March 2021</option>
+                </select>
+
+                <label>Report Author</label>
+                <input type="text" placeholder="Enter Report Author">
+
+                <label>Report Date</label>
+                <input type="date">
+
+                <label>Company Name</label>
+                <input type="text" placeholder="Enter Company Name">
+
+                <label>Notes</label>
+                <textarea placeholder="Enter additional notes"></textarea>
+            </div>
+        </div>
+
+        <div class="accessibility-testing">
+            <div class="form-section">
+                <h3>Accessibility Testing Info</h3>
+                <label>Evaluation Process (Check all that apply)</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="manual_automated" value="manual_automated">
+                        <label for="manual_automated">Manual and Automated Testing</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="manual_only" value="manual_only">
+                        <label for="manual_only">Manual Testing Only</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="automated_only" value="automated_only">
+                        <label for="automated_only">Automated Testing Only</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="independent_audit" value="independent_audit">
+                        <label for="independent_audit">3rd Party Independent Audits</label>
+                    </div>
+                </div>
+
+                <label>Testing Done By</label>
+                <select>
+                    <option value="internal_team">Internal Team</option>
+                    <option value="external_audit">External Audit</option>
+                </select>
+
+                <label>Testing for</label>
+                <select>
+                    <option value="web_accessibility">Web Accessibility</option>
+                    <option value="mobile_accessibility">Mobile Accessibility</option>
+                </select>
+
+                <label>Testing on (Platform, Browser, Assistive Tech)</label>
+                <input type="text" placeholder="e.g., Chrome, NVDA">
+
+                <label>User Testing</label>
+                <select>
+                    <option value="none">None</option>
+                    <option value="with_disability">With Disability</option>
+                    <option value="without_disability">Without Disability</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button>Generate ACR</button>
+        </div>
+    </div>
+<!-- Capture form data on the 3rd screen -->
+<script>
+    function saveVPATData() {
+        const wcagStandard = document.getElementById('wcagStandard').value;
+        const productName = document.getElementById('productName').value;
+        const productVersion = document.getElementById('productVersion').value;
+        const reportAuthor = document.getElementById('reportAuthor').value;
+        const reportDate = document.getElementById('reportDate').value;
+        const orgName = document.getElementById('orgName').value;
+        const evaluationMethod = document.getElementById('evaluationMethod').value;
+    
+        // Save data to localStorage
+        localStorage.setItem('wcagStandard', wcagStandard);
+        localStorage.setItem('productName', productName);
+        localStorage.setItem('productVersion', productVersion);
+        localStorage.setItem('reportAuthor', reportAuthor);
+        localStorage.setItem('reportDate', reportDate);
+        localStorage.setItem('orgName', orgName);
+        localStorage.setItem('evaluationMethod', evaluationMethod);
+    
+        // Redirect to the 4th screen
+        window.location.href = 'screen4.html';
+    }
+    </script>
+    
+</body>
+</html>

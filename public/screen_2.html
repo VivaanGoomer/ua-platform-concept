@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessibility Defect Management</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            height: 100%;
+            background-color: #f8f9fa;
+        }
+        .container {
+            width: 80%;
+            margin: 30px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .navbar-logo {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+        }
+        .navbar-logo h2 {
+            margin: 0;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        ul li {
+            display: inline-block;
+            padding: 1rem;
+        }
+        ul li a {
+            color: #333;
+            text-decoration: none;
+        }
+        .form-section, .table-wrapper, .edit-section {
+            background: #fff;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        select, input[type="text"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .button-container {
+            text-align: center;
+        }
+        button {
+            background-color: #333;
+            color: #fff;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        table, th, td {
+            border: 1px solid #eaeaea;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f8ff;
+            color: #333;
+            font-weight: 600;
+        }
+        tr:hover {
+            background-color: #f7faff;
+        }
+        .scrollable-table {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        textarea {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar-logo">
+        <h2>Unified Accessibility</h2>
+    </nav>
+
+    <ul>
+        <li><a href="screen_1.html">Test</a></li>
+        <li><a href="screen_2.html">Defect Results</a></li>
+        <li><a href="screen_3.html">Generate ACR</a></li>
+        <li><a href="screen_4.html">ACR Results</a></li>
+    </ul>
+
+    <div class="container">
+        <div class="form-section">
+            <h3>Start Test Details</h3>
+            <label>WCAG Standards</label>
+            <input type="text" id="wcagStandard" disabled>
+            <label>WCAG Conformance Levels</label>
+            <input type="text" id="wcagLevel" disabled>
+            <label>VPAT Template Version</label>
+            <input type="text" id="vpatTemplate" disabled>
+            <label>Platform</label>
+            <input type="text" id="platform" disabled>
+            <label>Environment</label>
+            <input type="text" id="environment" disabled>
+            <label>Site URL</label>
+            <input type="text" id="siteUrl" disabled>
+            <div class="button-container">
+                <button onclick="navigateToScreen3()">Generate ACR</button>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <h3>Grouped Defect Table</h3>
+            <div class="scrollable-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Element</th>
+                            <th>Defect IDs</th>
+                        </tr>
+                    </thead>
+                    <tbody id="defectTable">
+                        <!-- Rows populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <h3>Detailed Breakdown</h3>
+            <div class="scrollable-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Defect ID</th>
+                            <th>WCAG SC ID & Name</th>
+                            <th>Conformance Level</th>
+                            <th>Pass/Fail</th>
+                            <th>Severity</th>
+                            <th>Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rightTable">
+                        <!-- Rows populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="edit-section">
+            <h3>Edit Defect Details</h3>
+            <label>Defect ID</label>
+            <input type="text" id="defectID" disabled>
+            <label>Defect Description</label>
+            <textarea id="defectDescription" disabled></textarea>
+            <label>Element</label>
+            <input type="text" id="elementName" disabled>
+            <label>Element Code Snippet</label>
+            <textarea id="elementCode" disabled></textarea>
+        </div>
+    </div>
+
+    <script>
+    const defectData = [
+{
+        "Defect No.": 1,
+        "WCAG Guideline": "1.1.1 Non-text Content",
+        "Feature Name": "Find Us Page",
+        "Element": "Video",
+        "Element Code Snippet": "<video>",
+        "Accessibility Testing Type": "Screen Reader",
+        "Defect Description": "Complex Image Missing Alt Text (Store Layout Map)",
+        "Steps to Reproduce": "1. Visit the store's \"Find Us\" page.\n2. Use a screen reader to navigate the page.\n3. Locate the store layout map.",
+        "Expected Results": "The screen reader should describe the store layout or provide an accessible alternative text.",
+        "Actual Results": "The screen reader does not announce anything for the store layout map because the alt text is missing.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 2,
+        "WCAG Guideline": "1.1.1 Non-text Content",
+        "Feature Name": "Home Page",
+        "Element": "Form Error",
+        "Element Code Snippet": "<form-error>",
+        "Accessibility Testing Type": "Video",
+        "Defect Description": "Embedded Video with No Descriptive Text (Store Introduction)",
+        "Steps to Reproduce": "1. Navigate to the homepage.\n2. Play the introduction video.\n3. Use a screen reader to check for a text alternative.",
+        "Expected Results": "A text alternative or transcript should describe the video content.",
+        "Actual Results": "The video has no accompanying description or transcript, making it inaccessible to visually impaired users.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 3,
+        "WCAG Guideline": "1.1.1 Non-text Content",
+        "Feature Name": "Contact Us Page",
+        "Element": "Heading",
+        "Element Code Snippet": "<h1>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "No Alt Text for Image Buttons (Contact Us Button)",
+        "Steps to Reproduce": "1. Go to the \"Contact Us\" page.\n2. Locate the image button for submitting queries.\n3. Use a screen reader.",
+        "Expected Results": "The screen reader should announce \"Submit Query\" or a similar description of the button's function.",
+        "Actual Results": "The screen reader does not announce anything for the image button because the alt text is missing.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 4,
+        "WCAG Guideline": "1.1.1 Non-text Content",
+        "Feature Name": "Store Appointment",
+        "Element": "Button",
+        "Element Code Snippet": "<button>",
+        "Accessibility Testing Type": "Screen Reader",
+        "Defect Description": "CAPTCHA Image Without Text Alternative (Appointment Booking)",
+        "Steps to Reproduce": "1. Visit the store's appointment booking form.\n2. Attempt to complete it using a screen reader.\n3. Locate CAPTCHA.",
+        "Expected Results": "An accessible CAPTCHA option (e.g., an audio CAPTCHA) should be provided, or instructions should be accessible.",
+        "Actual Results": "No accessible alternative for the CAPTCHA is provided, preventing visually impaired users from completing the form.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 5,
+        "WCAG Guideline": "1.1.1 Non-text Content",
+        "Feature Name": "Promotions Page",
+        "Element": "Link",
+        "Element Code Snippet": "<a>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Decorative Image Improperly Labeled with Alt Text (Banner)",
+        "Steps to Reproduce": "1. Visit the promotions page.\n2. Use a screen reader.\n3. Listen to the screen reader's output on decorative banners.",
+        "Expected Results": "The decorative images should be skipped by using alt=\"\" to prevent irrelevant content from being announced.",
+        "Actual Results": "The screen reader announces the decorative banner images, adding unnecessary noise to the user experience.",
+        "Test Case Result": "Pass",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 6,
+        "WCAG Guideline": "1.1.1 Non-text Content",
+        "Feature Name": "Store Location Page",
+        "Element": "Form",
+        "Element Code Snippet": "<form>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Missing Alt Text for Image Maps (Store Locator)",
+        "Steps to Reproduce": "1. Visit the \"Store Locator\" page.\n2. Use a screen reader.\n3. Explore the clickable areas of the image map.",
+        "Expected Results": "The screen reader should describe each clickable region (e.g., \"New York Store\") for visually impaired users.",
+        "Actual Results": "The screen reader does not announce any information about the clickable areas of the image map.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 7,
+        "WCAG Guideline": "1.2.1 Audio-only and Video-only (Prerecorded)",
+        "Feature Name": "Store Podcast Page",
+        "Element": "Map",
+        "Element Code Snippet": "<map>",
+        "Accessibility Testing Type": "Audio",
+        "Defect Description": "Missing Transcript for Prerecorded Audio (Store Podcast)",
+        "Steps to Reproduce": "1. Visit the store\u2019s podcast page.\n2. Play the prerecorded podcast episode.\n3. Use a screen reader to check for a transcript.",
+        "Expected Results": "A transcript should be available for the podcast episode, enabling users with hearing impairments to access the content.",
+        "Actual Results": "No transcript is provided, making the podcast content inaccessible to users with hearing impairments.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 8,
+        "WCAG Guideline": "1.2.1 Audio-only and Video-only (Prerecorded)",
+        "Feature Name": "Home Page",
+        "Element": "Button",
+        "Element Code Snippet": "<button>",
+        "Accessibility Testing Type": "Video",
+        "Defect Description": "No Text Description for Prerecorded Video-only Content (Store Showcase)",
+        "Steps to Reproduce": "1. Navigate to the homepage.\n2. Play the video showcasing store products (no audio).\n3. Use a screen reader to check for a text description.",
+        "Expected Results": "A text description should describe the visual elements of the video-only content.",
+        "Actual Results": "No text description is provided, making the video content inaccessible to visually impaired users.",
+        "Test Case Result": "Pass",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 9,
+        "WCAG Guideline": "1.2.1 Audio-only and Video-only (Prerecorded)",
+        "Feature Name": "Promotions Page",
+        "Element": "Label",
+        "Element Code Snippet": "<label>",
+        "Accessibility Testing Type": "Video",
+        "Defect Description": "No Transcript for Background Music in Store Promo",
+        "Steps to Reproduce": "1. Visit the store\u2019s promotional page.\n2. Play the background music audio-only file.\n3. Use a screen reader to check for a transcript.",
+        "Expected Results": "A brief description or transcript should be provided, describing the purpose of the background music.",
+        "Actual Results": "No transcript is provided, leaving users unaware of the context of the background music.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 10,
+        "WCAG Guideline": "1.2.1 Audio-only and Video-only (Prerecorded)",
+        "Feature Name": "Promotions Page",
+        "Element": "Link",
+        "Element Code Snippet": "<a>",
+        "Accessibility Testing Type": "Audio",
+        "Defect Description": "Missing Transcript for Prerecorded Store Announcement Audio",
+        "Steps to Reproduce": "1. Go to the \"Latest Announcements\" section.\n2. Play the store's prerecorded audio announcement.\n3. Use a screen reader to check for a transcript.",
+        "Expected Results": "A transcript should describe the store's announcement for users with hearing impairments.",
+        "Actual Results": "No transcript is available, preventing hearing-impaired users from accessing the store's announcement.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 11,
+        "WCAG Guideline": "1.2.1 Audio-only and Video-only (Prerecorded)",
+        "Feature Name": "About Us Page",
+        "Element": "Form Error",
+        "Element Code Snippet": "<form-error>",
+        "Accessibility Testing Type": "Video",
+        "Defect Description": "No Text Alternative for Store Walkthrough Video (Silent Video)",
+        "Steps to Reproduce": "1. Visit the \"About Us\" page.\n2. Play the store walkthrough video (no audio).\n3. Use a screen reader to check for a text alternative.",
+        "Expected Results": "A text description should provide context about the store layout and visual elements in the walkthrough video.",
+        "Actual Results": "No text alternative is provided, making the video inaccessible to visually impaired users.",
+        "Test Case Result": "Pass",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 12,
+        "WCAG Guideline": "1.2.2 Captions (Prerecorded)",
+        "Feature Name": "New Arrivals Page",
+        "Element": "Banner",
+        "Element Code Snippet": "<img banner>",
+        "Accessibility Testing Type": "Video",
+        "Defect Description": "Missing Captions for Prerecorded Video Ad (Product Launch)",
+        "Steps to Reproduce": "1. Navigate to the store's \"New Arrivals\" page.\n2. Play the video ad for a new product.\n3. Use the video player to check for captions.",
+        "Expected Results": "The video should include captions for any spoken content, so users with hearing impairments can understand the ad.",
+        "Actual Results": "No captions are available, making the spoken content inaccessible to users with hearing impairments.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 13,
+        "WCAG Guideline": "1.2.2 Captions (Prerecorded)",
+        "Feature Name": "Training Page",
+        "Element": "Captcha",
+        "Element Code Snippet": "<captcha>",
+        "Accessibility Testing Type": "Video",
+        "Defect Description": "No Captions for Training Video on Store Policies",
+        "Steps to Reproduce": "1. Visit the store's employee training portal.\n2. Play the prerecorded training video.\n3. Check for captions while the video plays.",
+        "Expected Results": "The training video should have captions for all spoken content, making it accessible to hearing-impaired users.",
+        "Actual Results": "The training video has no captions, making it difficult for employees with hearing disabilities to follow the content.",
+        "Test Case Result": "Pass",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 14,
+        "WCAG Guideline": "1.2.4 Captions (Live)",
+        "Feature Name": "Home Page",
+        "Element": "Link",
+        "Element Code Snippet": "<a>",
+        "Accessibility Testing Type": "Video",
+        "Defect Description": "Missing Captions for Live Stream Event (Sale Launch)",
+        "Steps to Reproduce": "1. Visit the homepage during a live stream event.\n2. Watch the live stream.\n3. Use the player settings to check for live captions.",
+        "Expected Results": "The live stream should include live captions for any spoken dialogue, ensuring accessibility for all users.",
+        "Actual Results": "No live captions are provided, making the event inaccessible to users who are deaf or hard of hearing.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "AA",
+        "Severity": "Significant",
+        "Priority": "High",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 15,
+        "WCAG Guideline": "1.2.4 Captions (Live)",
+        "Feature Name": "Promotions Page",
+        "Element": "Banner",
+        "Element Code Snippet": "<img banner>",
+        "Accessibility Testing Type": "Video",
+        "Defect Description": "No Captions for Live Webinar on Store Operations",
+        "Steps to Reproduce": "1. Attend the store's live webinar on operations.\n2. Participate in the webinar.\n3. Check for captions while the webinar plays.",
+        "Expected Results": "The live webinar should have live captions for all spoken content, allowing users with hearing impairments to participate.",
+        "Actual Results": "The live webinar lacks live captions, preventing participants with hearing disabilities from fully engaging.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "AA",
+        "Severity": "Significant",
+        "Priority": "High",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 16,
+        "WCAG Guideline": "1.3.1 Info and Relationships",
+        "Feature Name": "Checkout Page",
+        "Element": "Map",
+        "Element Code Snippet": "<map>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Form Labels Missing Programmatic Association (Store Name)",
+        "Steps to Reproduce": "1. Visit the checkout page.\n2. Use a screen reader to navigate the form fields.\n3. Attempt to fill out the form.",
+        "Expected Results": "Form labels should be programmatically associated with the corresponding input fields, so screen reader users understand the purpose of each input.",
+        "Actual Results": "The form fields are not properly labeled, making it difficult for screen reader users to understand what information is required in each field.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 17,
+        "WCAG Guideline": "1.3.5 Identify Input Purpose",
+        "Feature Name": "Checkout Page",
+        "Element": "Image",
+        "Element Code Snippet": "<img>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Credit Card Input Field Missing Purpose Attribute",
+        "Steps to Reproduce": "1. Go to the checkout page.\n2. Use a screen reader to navigate to the credit card number input field.\n3. Check if the purpose of the input is identified.",
+        "Expected Results": "The credit card input field should be marked up with attributes that identify its purpose (e.g., autocomplete=\"cc-number\").",
+        "Actual Results": "The input field does not identify its purpose, making it difficult for users who rely on autocomplete features to input their credit card number efficiently.",
+        "Test Case Result": "Pass",
+        "WCAG Conformance Level": "AA",
+        "Severity": "Significant",
+        "Priority": "High",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 18,
+        "WCAG Guideline": "1.4.3 Contrast (Minimum)",
+        "Feature Name": "Product Page",
+        "Element": "Map",
+        "Element Code Snippet": "<map>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Text on Product Image Lacks Sufficient Contrast",
+        "Steps to Reproduce": "1. Visit the product page.\n2. Check the contrast ratio between the text and background (e.g., using a contrast checker).\n3. Visit the store's homepage.",
+        "Expected Results": "Text should have a contrast ratio of at least 4.5:1 for normal text and 3:1 for large text to ensure readability.",
+        "Actual Results": "The contrast between the text and background is too low, making it difficult for users with visual impairments to read the text.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "AA",
+        "Severity": "Significant",
+        "Priority": "High",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 19,
+        "WCAG Guideline": "1.4.4 Resize Text",
+        "Feature Name": "Home Page",
+        "Element": "Text",
+        "Element Code Snippet": "<p>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Text Does Not Resize Properly",
+        "Steps to Reproduce": "1. Visit the store's homepage.\n2. Resize the text using browser settings (e.g., zoom in 200%).\n3. Check for text resizing issues.",
+        "Expected Results": "The text should resize properly without requiring horizontal scrolling, and all content should remain readable and functional.",
+        "Actual Results": "Text does not resize correctly, causing overlap with other content and requiring horizontal scrolling to view all the information.",
+        "Test Case Result": "Pass",
+        "WCAG Conformance Level": "AA",
+        "Severity": "Significant",
+        "Priority": "High",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 20,
+        "WCAG Guideline": "1.4.10 Reflow",
+        "Feature Name": "Home Page",
+        "Element": "Text",
+        "Element Code Snippet": "<p>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Page Requires Horizontal Scrolling on Mobile",
+        "Steps to Reproduce": "1. Visit the store's homepage on a mobile device.\n2. Zoom in or use a smaller screen size (320px width).\n3. Check for horizontal scrolling.",
+        "Expected Results": "The page should reflow to fit smaller screen sizes, eliminating the need for horizontal scrolling.",
+        "Actual Results": "The content does not reflow properly, requiring horizontal scrolling to view parts of the page, making it difficult for users with low vision or mobile users.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "AA",
+        "Severity": "Significant",
+        "Priority": "High",
+        "Platform (web, mweb)": "mweb"
+    },
+    {
+        "Defect No.": 21,
+        "WCAG Guideline": "1.4.11 Non-text Contrast",
+        "Feature Name": "Promotions Page",
+        "Element": "Label",
+        "Element Code Snippet": "<label>",
+        "Accessibility Testing Type": "Color Contrast",
+        "Defect Description": "Low Contrast Between Graphical Elements",
+        "Steps to Reproduce": "1. Visit the promotions page.\n2. Look for non-text elements such as buttons or icons.\n3. Use a contrast checker to verify contrast ratios.",
+        "Expected Results": "Graphical elements like buttons and icons should have a contrast ratio of at least 3:1 against the background to ensure visibility.",
+        "Actual Results": "The contrast between the buttons and the background is too low, making them difficult to identify for users with visual impairments.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "AA",
+        "Severity": "Significant",
+        "Priority": "High",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 22,
+        "WCAG Guideline": "2.1.1 Keyboard",
+        "Feature Name": "Home Page",
+        "Element": "Form Error",
+        "Element Code Snippet": "<form-error>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Cannot Navigate Carousel Using Keyboard",
+        "Steps to Reproduce": "1. Visit the store's homepage.\n2. Use only the keyboard to navigate through the carousel.\n3. Attempt to move between slides using keyboard navigation.",
+        "Expected Results": "All interactive elements, including carousels, should be fully operable using only the keyboard.",
+        "Actual Results": "The carousel does not respond to keyboard inputs, making it inaccessible to users who cannot use a mouse.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 23,
+        "WCAG Guideline": "2.1.1 Keyboard",
+        "Feature Name": "Product Page",
+        "Element": "Link",
+        "Element Code Snippet": "<a>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Cannot Operate Dropdown Filter with Keyboard",
+        "Steps to Reproduce": "1. Visit the product page.\n2. Use only the keyboard to navigate to and operate the dropdown filter.\n3. Try changing the filter selection using the keyboard.",
+        "Expected Results": "Dropdown filters should be fully operable using only the keyboard.",
+        "Actual Results": "The dropdown filter is not operable using the keyboard, preventing keyboard-only users from filtering products.",
+        "Test Case Result": "Pass",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 24,
+        "WCAG Guideline": "2.1.1 Keyboard",
+        "Feature Name": "Home Page",
+        "Element": "Form Error",
+        "Element Code Snippet": "<form-error>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Keyboard Cannot Access Navigation Menu",
+        "Steps to Reproduce": "1. Visit the homepage.\n2. Use only the keyboard to navigate to the main navigation menu.\n3. Attempt to access the links in the menu.",
+        "Expected Results": "All links and buttons in the navigation menu should be fully accessible using the keyboard.",
+        "Actual Results": "The navigation menu cannot be accessed via the keyboard, making it inaccessible to users relying on keyboard navigation.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 25,
+        "WCAG Guideline": "2.1.2 No Keyboard Trap",
+        "Feature Name": "Home Page",
+        "Element": "Heading",
+        "Element Code Snippet": "<h1>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Keyboard Focus Trapped in Search Field",
+        "Steps to Reproduce": "1. Visit the homepage.\n2. Use only the keyboard to navigate to the search field.\n3. Attempt to tab away from the search field.",
+        "Expected Results": "Keyboard focus should not become trapped in any element, and users should be able to navigate away using the Tab key.",
+        "Actual Results": "Keyboard focus becomes trapped in the search field, preventing users from navigating to other parts of the page.",
+        "Test Case Result": "Pass",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 26,
+        "WCAG Guideline": "2.2.1 Timing Adjustable",
+        "Feature Name": "Checkout Page",
+        "Element": "Form",
+        "Element Code Snippet": "<form>",
+        "Accessibility Testing Type": "Session Timeout",
+        "Defect Description": "Session Timeout on Checkout with No Warning",
+        "Steps to Reproduce": "1. Visit the checkout page.\n2. Leave the session idle for a while.\n3. Check if a warning is provided before session timeout.",
+        "Expected Results": "Users should be warned about any time limits and given an option to extend the session if needed.",
+        "Actual Results": "The session times out without warning, causing users to lose their progress without the option to extend the session.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 27,
+        "WCAG Guideline": "2.2.2 Pause, Stop, Hide",
+        "Feature Name": "Promotions Page",
+        "Element": "Text",
+        "Element Code Snippet": "<p>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "No Pause Button for Auto-scrolling Promotions",
+        "Steps to Reproduce": "1. Visit the promotions page.\n2. Observe any auto-scrolling content.\n3. Check for a pause, stop, or hide option for the scrolling content.",
+        "Expected Results": "Users should be able to pause, stop, or hide auto-scrolling content, ensuring that they can control the pace of content.",
+        "Actual Results": "The auto-scrolling content on the promotions page does not have a pause or stop option, making it difficult for users to read at their own pace.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "AA",
+        "Severity": "Significant",
+        "Priority": "High",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 28,
+        "WCAG Guideline": "2.4.1 Bypass Blocks",
+        "Feature Name": "Home Page",
+        "Element": "Link",
+        "Element Code Snippet": "<a>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "No Skip to Content Link",
+        "Steps to Reproduce": "1. Visit the homepage.\n2. Use a screen reader or keyboard navigation to check for a \"Skip to Content\" link.\n3. Attempt to bypass repetitive navigation.",
+        "Expected Results": "A \"Skip to Content\" link should be provided at the beginning of the page to allow users to bypass repetitive navigation menus.",
+        "Actual Results": "No \"Skip to Content\" link is provided, forcing users to navigate through repetitive menus to reach the main content.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 29,
+        "WCAG Guideline": "2.4.3 Focus Order",
+        "Feature Name": "Checkout Page",
+        "Element": "Form",
+        "Element Code Snippet": "<form>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Incorrect Focus Order on Checkout Form",
+        "Steps to Reproduce": "1. Visit the checkout page.\n2. Use the keyboard to navigate through the form fields.\n3. Observe the focus order.",
+        "Expected Results": "The focus order should follow a logical sequence that matches the visual layout, ensuring smooth navigation.",
+        "Actual Results": "The focus jumps between unrelated form fields, creating confusion and difficulty for keyboard users.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 30,
+        "WCAG Guideline": "2.4.3 Focus Order",
+        "Feature Name": "Product Review Page",
+        "Element": "Heading",
+        "Element Code Snippet": "<h1>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Focus Skips Over Buttons in Form",
+        "Steps to Reproduce": "1. Visit the product review page.\n2. Use the keyboard to navigate through the form elements.\n3. Observe if the focus highlights all interactive elements in order.",
+        "Expected Results": "The focus should move in a logical sequence, without skipping any form buttons or elements.",
+        "Actual Results": "The focus skips over important buttons, making it difficult for keyboard users to submit the form.",
+        "Test Case Result": "Pass",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 31,
+        "WCAG Guideline": "2.4.3 Focus Order",
+        "Feature Name": "Product Category Page",
+        "Element": "Label",
+        "Element Code Snippet": "<label>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Focus Does Not Highlight Links in Sidebar",
+        "Steps to Reproduce": "1. Visit the product category page.\n2. Use the keyboard to navigate through the sidebar.\n3. Observe if the focus highlights all sidebar links.",
+        "Expected Results": "The focus should highlight all interactive elements in the sidebar for clear navigation.",
+        "Actual Results": "The focus does not highlight the sidebar links, making it difficult for keyboard users to navigate through the page.",
+        "Test Case Result": "Pass",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 32,
+        "WCAG Guideline": "3.1.1 Language of Page",
+        "Feature Name": "Home Page",
+        "Element": "Video",
+        "Element Code Snippet": "<video>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Missing Language Attribute on Homepage",
+        "Steps to Reproduce": "1. Visit the homepage.\n2. Inspect the HTML code for the lang attribute.\n3. Check if the language is specified.",
+        "Expected Results": "The lang attribute should be set to identify the default language of the page (e.g., lang=\"en\" for English).",
+        "Actual Results": "The lang attribute is missing, making it difficult for assistive technologies to properly interpret the page's language.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 33,
+        "WCAG Guideline": "3.1.1 Language of Page",
+        "Feature Name": "Product Page",
+        "Element": "Form Error",
+        "Element Code Snippet": "<form-error>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Incorrect Language Attribute on Product Page",
+        "Steps to Reproduce": "1. Visit the product page.\n2. Inspect the HTML code for the lang attribute.\n3. Check if the correct language is specified.",
+        "Expected Results": "The lang attribute should correctly identify the primary language of the page.",
+        "Actual Results": "The lang attribute is incorrectly set (e.g., lang=\"es\" for an English page), causing screen readers to misinterpret the text.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 34,
+        "WCAG Guideline": "3.1.1 Language of Page",
+        "Feature Name": "Product Page",
+        "Element": "Button",
+        "Element Code Snippet": "<button>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "No Language Attribute for Multilingual Page",
+        "Steps to Reproduce": "1. Visit a multilingual product page.\n2. Inspect the HTML code for language attributes.\n3. Check if the page has language markup for different sections.",
+        "Expected Results": "The page should have language attributes that identify each section of the content in the correct language.",
+        "Actual Results": "The page lacks language attributes for different language sections, causing screen readers to mispronounce the content.",
+        "Test Case Result": "Pass",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 35,
+        "WCAG Guideline": "3.2.1 On Focus",
+        "Feature Name": "Checkout Page",
+        "Element": "Form Input",
+        "Element Code Snippet": "<input>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Form Submits Automatically When Focused",
+        "Steps to Reproduce": "1. Visit the checkout page.\n2. Use the Tab key to navigate through the form.\n3. Observe if the form submits automatically when a field gains focus.",
+        "Expected Results": "Interactive elements should not change when they receive focus unless the user takes an explicit action.",
+        "Actual Results": "The form submits automatically when a field gains focus, causing confusion for users who are trying to navigate.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 36,
+        "WCAG Guideline": "3.2.2 On Input",
+        "Feature Name": "Product Page",
+        "Element": "Heading",
+        "Element Code Snippet": "<h1>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Dropdown Filter Applies Without Warning",
+        "Steps to Reproduce": "1. Visit the product page.\n2. Use a dropdown filter to sort products.\n3. Observe if the page refreshes automatically when a selection is made.",
+        "Expected Results": "Changes should not happen automatically when a user interacts with a form control unless they are informed in advance.",
+        "Actual Results": "The dropdown filter applies changes without warning when a selection is made, causing unexpected page reloads.",
+        "Test Case Result": "Pass",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 37,
+        "WCAG Guideline": "3.3.1 Error Identification",
+        "Feature Name": "Checkout Page",
+        "Element": "Map",
+        "Element Code Snippet": "<map>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Error Message Not Announced by Screen Reader",
+        "Steps to Reproduce": "1. Visit the checkout page.\n2. Submit the form with invalid information.\n3. Use a screen reader to check if error messages are announced.",
+        "Expected Results": "Error messages should be programmatically associated with form fields and announced by screen readers.",
+        "Actual Results": "Error messages are not announced, making it difficult for screen reader users to understand what needs to be corrected.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 38,
+        "WCAG Guideline": "3.3.3 Error Suggestion",
+        "Feature Name": "Login Page",
+        "Element": "Video",
+        "Element Code Snippet": "<video>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "No Suggestion for Incorrect Password Format",
+        "Steps to Reproduce": "1. Visit the login page.\n2. Enter a password in the wrong format.\n3. Submit the form and observe the error message.",
+        "Expected Results": "The error message should suggest the correct password format (e.g., \"Password must be at least 8 characters\").",
+        "Actual Results": "The error message is generic and does not provide helpful suggestions, leaving users unsure of how to fix the issue.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "AA",
+        "Severity": "Significant",
+        "Priority": "High",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 39,
+        "WCAG Guideline": "3.3.4 Error Prevention (Legal, Financial, Data)",
+        "Feature Name": "Checkout Page",
+        "Element": "Video",
+        "Element Code Snippet": "<video>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "No Confirmation Step for Submitting Payment",
+        "Steps to Reproduce": "1. Visit the checkout page.\n2. Enter payment information.\n3. Submit the form without receiving a confirmation prompt.",
+        "Expected Results": "Users should be given a chance to review and confirm their input before submitting important data like payment information.",
+        "Actual Results": "The payment form submits immediately without a confirmation step, increasing the risk of errors and unintended actions.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "AA",
+        "Severity": "Significant",
+        "Priority": "High",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 40,
+        "WCAG Guideline": "4.1.2 Name, Role, Value",
+        "Feature Name": "Home Page",
+        "Element": "Label",
+        "Element Code Snippet": "<label>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Improper ARIA Role on Navigation Menu",
+        "Steps to Reproduce": "1. Visit the homepage.\n2. Use a screen reader to navigate through the site.\n3. Check the ARIA roles assigned to navigation elements.",
+        "Expected Results": "ARIA roles should be correctly used to communicate the name, role, and value of interactive elements to assistive technologies.",
+        "Actual Results": "The navigation menu has incorrect ARIA roles, making it difficult for screen readers to convey the proper information to users.",
+        "Test Case Result": "Pass",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 41,
+        "WCAG Guideline": "4.1.2 Name, Role, Value",
+        "Feature Name": "Promotions Page",
+        "Element": "Form Error",
+        "Element Code Snippet": "<form-error>",
+        "Accessibility Testing Type": "",
+        "Defect Description": "Button Label Missing ARIA Role",
+        "Steps to Reproduce": "1. Visit the promotions page.\n2. Use a screen reader to interact with the buttons.\n3. Check if the buttons are properly labeled with ARIA roles.",
+        "Expected Results": "Buttons should have ARIA roles that clearly define their purpose for assistive technologies.",
+        "Actual Results": "The button is missing an ARIA role, preventing screen readers from identifying its function.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    },
+    {
+        "Defect No.": 42,
+        "WCAG Guideline": "4.1.2 Name, Role, Value",
+        "Feature Name": "Product Page",
+        "Element": "Button",
+        "Element Code Snippet": "<button>",
+        "Accessibility Testing Type": "Keyboard",
+        "Defect Description": "Interactive Element Has Incorrect ARIA Role",
+        "Steps to Reproduce": "1. Visit the product filtering page.\n2. Use a screen reader to navigate to the dropdown filter.\n3. Check if the dropdown filter has the correct ARIA role.",
+        "Expected Results": "The ARIA role should correctly describe the function of the interactive element for assistive technologies.",
+        "Actual Results": "The dropdown filter is incorrectly marked as a button, confusing screen reader users and making it difficult to operate.",
+        "Test Case Result": "Fail",
+        "WCAG Conformance Level": "A",
+        "Severity": "Critical",
+        "Priority": "Immediate",
+        "Platform (web, mweb)": "web"
+    }
+    // More defects can be added here
+];
+
+    function loadTableData() {
+        const defectTable = document.getElementById('defectTable');
+        let defectRows = '';
+
+        const groupedData = defectData.reduce((acc, curr) => {
+            const element = curr.Element;
+            if (!acc[element]) {
+                acc[element] = [];
+            }
+            acc[element].push(curr["Defect No."]);
+            return acc;
+        }, {});
+
+        for (const element in groupedData) {
+            const defectIDs = groupedData[element];
+            defectRows += `<tr onclick="showDefectDetails('${element}')">
+                                <td>${element}</td>
+                                <td>${defectIDs.join(', ')}</td>
+                            </tr>`;
+        }
+
+        defectTable.innerHTML = defectRows;
+    }
+
+    function showDefectDetails(element) {
+        const rightTable = document.getElementById('rightTable');
+        let detailRows = '';
+
+        const defects = defectData.filter(defect => defect.Element === element);
+
+        defects.forEach(defect => {
+            detailRows += `
+                <tr onclick="populateDefectDetails(${defect['Defect No.']})">
+                    <td>${defect["Defect No."]}</td>
+                    <td>${defect["WCAG Guideline"]}</td>
+                    <td>${defect["WCAG Conformance Level"]}</td>
+                    <td>${defect["Test Case Result"]}</td>
+                    <td>${defect["Severity"]}</td>
+                    <td>${defect["Priority"]}</td>
+                </tr>
+            `;
+        });
+
+        rightTable.innerHTML = detailRows;
+    }
+
+    function populateDefectDetails(defectNo) {
+        const defect = defectData.find(d => d["Defect No."] === defectNo);
+
+        document.getElementById('defectID').value = defect["Defect No."];
+        document.getElementById('defectDescription').value = defect["Defect Description"];
+        document.getElementById('elementName').value = defect["Element"];
+        document.getElementById('elementCode').value = defect["Element Code Snippet"];
+    }
+
+    function loadStartTestDetails() {
+        document.getElementById('wcagStandard').value = localStorage.getItem('wcagStandard') || '';
+        document.getElementById('wcagLevel').value = localStorage.getItem('wcagLevel') || '';
+        document.getElementById('vpatTemplate').value = localStorage.getItem('vpatTemplate') || '';
+        document.getElementById('platform').value = localStorage.getItem('platform') || '';
+        document.getElementById('environment').value = localStorage.getItem('environment') || '';
+        document.getElementById('siteUrl').value = localStorage.getItem('siteUrl') || '';
+    }
+
+    function navigateToScreen3() {
+        window.location.href = 'screen_3.html';
+    }
+
+    window.onload = function() {
+        loadStartTestDetails();
+        loadTableData();
+    };
+    </script>
+</body>
+</html>
